@@ -1,5 +1,0 @@
-@import './app.theme.scss';
-
-@mixin app-theme($app-theme) {
-  @include app-component-theme($app-app-theme);
-}
