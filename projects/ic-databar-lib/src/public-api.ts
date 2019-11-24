@@ -7,6 +7,9 @@ export * from './lib/contrato/IDataBarService';
 export * from './lib/contrato/IDataEntidadePaginada';
 export * from './lib/contrato/IDatabarStatusService';
 export * from './lib/contrato/OnInitDataBar';
+export * from './lib/enum/eeventoclick';
+export * from './lib/enum/estatus';
+export * from './lib/services/ic-databar-event-click.service';
 
 export * from './lib/ic-data-bar.component';
 export * from './lib/ic-data-bar.module';
