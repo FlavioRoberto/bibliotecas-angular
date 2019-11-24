@@ -1,0 +1,45 @@
+<div fxLayout="column" fxFlex style="z-index: 9999;">
+  <h2 *ngIf="!emProgresso" mat-dialog-title>{{titulo}}</h2>
+
+  <mat-dialog-content style="overflow: hidden;">
+    <p *ngIf="!emProgresso" [innerHTML]="mensagem"></p>
+    <div
+      *ngIf="emProgresso"
+      fxflex
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <div fxLayout="column" fxflex="20" fxLayoutAlign="center center">
+        <mat-spinner [diameter]="40" *ngIf="emProgresso"></mat-spinner>
+      </div>
+
+      <div
+        fxLayout="column"
+        fxFlexOffset="5%"
+        fxflex
+        fxLayoutAlign="center center"
+      >
+        <p>{{acaoMensagem}}</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" *ngIf="!emProgresso">
+    <button
+      [disabled]="emProgresso"
+      class="mat-raised-button"
+      (click)="close()"
+    >
+      Não
+    </button>
+    <button
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      [disabled]="emProgresso"
+      class="mat-raised-button mat-accent"
+      (click)="ok()"
+    >
+      <span>Sim</span>
+    </button>
+  </mat-dialog-actions>
+</div>

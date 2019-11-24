@@ -1,0 +1,361 @@
+<div fxLayout="column" fxFlex="1 0 auto" fxFlexLayout="space-around center">
+  <mat-toolbar class="px-0 mat-elevation-z4">
+    <!-- verificar se display sm -->
+    <div fxLayout="row" fxLayoutAlign="space-around center" fxFlex="1 0 auto">
+      <mat-drawer-container fxHide.gt-sm fxFlex.sm>
+        <button type="button" mat-button (click)="drawer.toggle()">
+          <mat-icon>list</mat-icon>
+        </button>
+      </mat-drawer-container>
+
+      <div
+        fxLayout="row"
+        fxLayoutAlign="space-around center"
+        fxHide
+        fxShow.gt-sm
+        fxFlex.sm
+      >
+        <!-- BTN_NOVA_PESQUISA -->
+        <button
+          mat-button
+          [disabled]="
+            status == EStatus.novaPesquisa ||
+            status == EStatus.executarAcao ||
+            emProgresso
+          "
+          color="primary"
+          (click)="onClickNovaPesquisa()"
+          matTooltip="Nova Pesquisa"
+        >
+          <mat-icon>restore_page</mat-icon>
+        </button>
+        <!-- BTN_NOVA_PESQUISA -->
+
+        <!-- BTN_PESQUISAR -->
+        <button
+          [disabled]="
+            status == EStatus.inserindo ||
+            status == EStatus.editando ||
+            status == EStatus.dadosCarregados ||
+            emProgresso
+          "
+          mat-button
+          color="primary"
+          (click)="pesquisar()"
+          matTooltip="Pesquisar"
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+        <!-- BTN_PESQUISAR -->
+
+        <!-- BTN_ADICIONAR -->
+        <button
+          mat-button
+          [disabled]="
+            status == EStatus.editando ||
+            status == EStatus.inserindo ||
+            emProgresso ||
+            disabled
+          "
+          matTooltip="Adicionar"
+          (click)="inserir()"
+          color="primary"
+        >
+          <mat-icon>add_circle</mat-icon>
+        </button>
+        <!-- BTN_ADICIONAR -->
+
+        <!-- BTN_EDITAR -->
+        <button
+          mat-button
+          [disabled]="
+            status == 'Inserindo' ||
+            status == EStatus.novaPesquisa ||
+            status == EStatus.executarAcao ||
+            status == EStatus.pesquisando ||
+            status == EStatus.editando ||
+            emProgresso ||
+            disabled
+          "
+          color="primary"
+          matTooltip="Editar"
+          (click)="editar()"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <!-- BTN_EDITAR -->
+
+        <!-- BTN_REMOVER -->
+        <button
+          mat-button
+          [disabled]="
+            !entidadePaginada?.entidade ||
+            status != EStatus.dadosCarregados ||
+            desabilitarBotaoRemover ||
+            emProgresso
+          "
+          color="primary"
+          matTooltip="Remover"
+          (click)="remover()"
+        >
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+        <!-- BTN_REMOVER -->
+
+        <!-- BTN_SALVAR -->
+        <button
+          [disabled]="
+            form?.invalid ||
+            (status != EStatus.inserindo && status != EStatus.editando) ||
+            emProgresso ||
+            disabled
+          "
+          mat-button
+          matTooltip="Salvar"
+          (click)="salvar()"
+          color="primary"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+        <!-- BTN_SALVAR -->
+
+        <!-- PROGRESS -->
+        <mat-spinner [diameter]="20" *ngIf="emProgresso"></mat-spinner>
+        <!-- PROGRESS -->
+
+        <button
+          [disabled]="status && !emProgresso"
+          mat-button
+          color="primary"
+          matTooltip="Ação no momento"
+        >
+          <span class="status">{{ status }}</span>
+        </button>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="center center" fxFlex.sm>
+        <!-- BTN_PRIMEIRO -->
+        <button
+          [disabled]="entidadePaginada?.posicao <= 1"
+          mat-button
+          color="primary"
+          (click)="primeiro()"
+          matTooltip="Primeiro Item"
+          fxHide.lt-sm
+          fxFlex.sm
+          class="px-0 px-sm-12"
+        >
+          <mat-icon>first_page</mat-icon>
+        </button>
+        <!-- BTN_PRIMEIRO -->
+
+        <!-- BTN_ANTERIOR -->
+        <button
+          [disabled]="entidadePaginada?.posicao <= 1"
+          mat-button
+          color="primary"
+          (click)="anterior()"
+          matTooltip="Anterior"
+          class="px-0 px-sm-12"
+        >
+          <mat-icon>navigate_before</mat-icon>
+        </button>
+        <!-- BTN_ANTERIOR -->
+
+        <button
+          mat-button
+          color="primary"
+          matTooltip="Página Atual"
+          class="px-0 px-sm-12"
+        >
+          {{ entidadePaginada?.posicao }} de {{ entidadePaginada?.total }}
+        </button>
+
+        <!-- BTN_PROXIMO -->
+        <button
+          [disabled]="entidadePaginada?.posicao >= entidadePaginada?.total"
+          mat-button
+          color="primary"
+          (click)="proximo()"
+          matTooltip="Próximo"
+          class="px-0 px-sm-12"
+        >
+          <mat-icon>navigate_next</mat-icon>
+        </button>
+        <!-- BTN_PROXIMO -->
+
+        <!-- BTN_ULTIMO -->
+        <button
+          [disabled]="entidadePaginada?.posicao >= entidadePaginada?.total"
+          mat-button
+          color="primary"
+          (click)="ultimo()"
+          matTooltip="Último"
+          fxHide.lt-sm
+          fxFlex.sm
+          class="px-0 px-sm-12"
+        >
+          <mat-icon>last_page</mat-icon>
+        </button>
+        <!-- BTN_ULTIMO -->
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <mat-drawer #drawer mode="over" fxFlex fxLayoutAlign="column">
+    <div fxLayout="row" fxLayoutAlign="space-between center" class="pr-12">
+      <h4 class="pl-12">Ações</h4>
+      <button mat-icon-button (click)="drawer.toggle()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="start start" class="px-12 overflow">
+      <mat-list>
+        <mat-list-item>
+          <!-- BTN_PRIMEIRO -->
+          <button
+            [disabled]="entidadePaginada?.posicao <= 1"
+            mat-button
+            color="primary"
+            (click)="primeiro()"
+            matTooltip="Primeiro Item"
+            class="px-0 px-sm-12"
+          >
+            <mat-icon>first_page</mat-icon> Primeiro item
+          </button>
+          <!-- BTN_PRIMEIRO -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_ULTIMO -->
+          <button
+            [disabled]="entidadePaginada?.posicao >= entidadePaginada?.total"
+            mat-button
+            color="primary"
+            (click)="ultimo()"
+            matTooltip="Último"
+            class="px-0 px-sm-12"
+          >
+            <mat-icon>last_page</mat-icon> Último item
+          </button>
+          <!-- BTN_ULTIMO -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_NOVA_PESQUISA -->
+          <button
+            mat-button
+            [disabled]="emProgresso"
+            color="primary"
+            (click)="onClickNovaPesquisa()"
+            matTooltip="Nova Pesquisa"
+          >
+            <mat-icon>restore_page</mat-icon> Nova Pesquisa
+          </button>
+          <!-- BTN_NOVA_PESQUISA -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_PESQUISAR -->
+          <button
+            [disabled]="
+              status == EStatus.inserindo ||
+              status == EStatus.editando ||
+              status == EStatus.dadosCarregados ||
+              emProgresso
+            "
+            mat-button
+            color="primary"
+            (click)="pesquisar()"
+            matTooltip="Pesquisar"
+          >
+            <mat-icon>search</mat-icon> Pesquisar
+          </button>
+          <!-- BTN_PESQUISAR -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_ADICIONAR -->
+          <button
+            mat-button
+            [disabled]="
+              status == EStatus.editando ||
+              status == EStatus.inserindo ||
+              emProgresso
+            "
+            matTooltip="Adicionar"
+            (click)="inserir()"
+            color="primary"
+          >
+            <mat-icon>add_circle</mat-icon> Incluir
+          </button>
+          <!-- BTN_ADICIONAR -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_EDITAR -->
+          <button
+            mat-button
+            [disabled]="
+              status == 'Inserindo' ||
+              status == EStatus.novaPesquisa ||
+              status == EStatus.executarAcao ||
+              status == EStatus.pesquisando ||
+              emProgresso
+            "
+            color="primary"
+            matTooltip="Editar"
+            (click)="editar()"
+          >
+            <mat-icon>edit</mat-icon> Editar
+          </button>
+          <!-- BTN_EDITAR -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_REMOVER -->
+          <button
+            mat-button
+            [disabled]="
+              !entidadePaginada?.entidade ||
+              status != EStatus.dadosCarregados ||
+              emProgresso
+            "
+            color="primary"
+            matTooltip="Remover"
+            (click)="remover()"
+          >
+            <mat-icon>delete_forever</mat-icon> Remover
+          </button>
+          <!-- BTN_REMOVER -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <!-- BTN_SALVAR -->
+          <button
+            [disabled]="
+              form?.invalid ||
+              (status != EStatus.inserindo && status != EStatus.editando) ||
+              emProgresso
+            "
+            mat-button
+            matTooltip="Salvar"
+            color="primary"
+            (click)="salvar()"
+          >
+            <mat-icon>save</mat-icon> Salvar
+          </button>
+          <!-- BTN_SALVAR -->
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+    </div>
+  </mat-drawer>
+</div>
