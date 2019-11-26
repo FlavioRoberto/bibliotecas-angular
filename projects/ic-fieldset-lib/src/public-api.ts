@@ -2,5 +2,5 @@
  * Public API Surface of ic-fieldset
  */
 
-export * from './lib/tc-fieldset.component';
-export * from './lib/tc-fieldset.module';
+export * from './lib/ic-fieldset.component';
+export * from './lib/ic-fieldset.module';
