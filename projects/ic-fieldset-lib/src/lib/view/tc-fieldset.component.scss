@@ -1,0 +1,11 @@
+#ap-fieldset {
+    &.field_set {
+        border-color: #039BE5;
+        border-style: solid;
+    }
+
+    &.field_set_disabled {
+        border-color: #ccc;
+        border-style: solid;
+    }
+}

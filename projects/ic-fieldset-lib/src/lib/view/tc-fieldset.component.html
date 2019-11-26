@@ -1,0 +1,8 @@
+<fieldset
+    id="ap-fieldset"
+    [ngClass]="{ field_set: comFoco, field_set_disabled: !comFoco }"
+>
+    <legend>{{ label }}</legend>
+
+    <ng-content></ng-content>
+</fieldset>

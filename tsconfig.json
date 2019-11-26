@@ -24,6 +24,12 @@
       ],
       "ic-databar-lib/*": [
         "dist/ic-databar-lib/*"
+      ],
+      "ic-fieldset-lib": [
+        "dist/ic-fieldset-lib"
+      ],
+      "ic-fieldset-lib/*": [
+        "dist/ic-fieldset-lib/*"
       ]
     }
   },

@@ -161,6 +161,41 @@
           }
         }
       }
+    },
+    "ic-fieldset-lib": {
+      "projectType": "library",
+      "root": "projects/ic-fieldset-lib",
+      "sourceRoot": "projects/ic-fieldset-lib/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ic-fieldset-lib/tsconfig.lib.json",
+            "project": "projects/ic-fieldset-lib/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ic-fieldset-lib/src/test.ts",
+            "tsConfig": "projects/ic-fieldset-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/ic-fieldset-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ic-fieldset-lib/tsconfig.lib.json",
+              "projects/ic-fieldset-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ic-databar-lib"
