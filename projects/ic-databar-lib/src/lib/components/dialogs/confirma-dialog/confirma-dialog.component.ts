@@ -1,10 +1,9 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { OnInit, Inject, Component } from '@angular/core';
-import { Observable } from 'rxjs';
 
 @Component({
     selector: 'confirma-dialog',
-    templateUrl: './view/confirma-dialog.html',
+    templateUrl: './view/confirma-dialog.html'
 })
 export class ConfirmaDialogComponent implements OnInit {
 
@@ -28,7 +27,7 @@ export class ConfirmaDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        
+
     }
 
     ok(): void {

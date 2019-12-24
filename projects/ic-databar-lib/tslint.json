@@ -9,6 +9,7 @@
     ],
     "component-selector": [
       true,
+      "ic",
       "element",
       "lib",
       "kebab-case"

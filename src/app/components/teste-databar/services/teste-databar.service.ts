@@ -1,12 +1,10 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { Teste } from '../model/teste';
 import { FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs';
 import { TestePaginado } from '../model/teste.paginado';
-import { IDatabarBindOnClickService } from 'projects/ic-databar-lib/src/lib/contrato/IDataBarBindOnClickService';
-import { DatabarEventClickService } from 'projects/ic-databar-lib/src/lib/services/ic-databar-event-click.service';
-import { EStatus } from 'projects/ic-databar-lib/src/lib/enum/estatus';
+import { Teste } from '../model/teste';
+import { DatabarEventClickService, EStatus, IDatabarBindOnClickService } from '@breaking_dev/ic-databar-lib';
 
 @Injectable()
 export class TesteDatabarService implements IDatabarBindOnClickService<Teste> {
@@ -40,8 +38,19 @@ export class TesteDatabarService implements IDatabarBindOnClickService<Teste> {
   }
 
   listarPaginacao(entidadePaginada: TestePaginado): Observable<TestePaginado> {
+    console.log(this.formgroup.getRawValue());
+    entidadePaginada.entidade = this.getDadosMock();
     return of(entidadePaginada);
   }
 
+  private getDadosMock(): Teste[] {
+    return [
+      {
+        codigo: 1,
+        nome: 'Teste',
+        sobrenome: 'Teste 2'
+      }
+    ] as Teste[];
+  }
 
 }

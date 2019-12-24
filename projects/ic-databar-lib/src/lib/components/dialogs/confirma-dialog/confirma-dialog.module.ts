@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { ConfirmaDialogComponent } from './confirma-dialog.component';
 import { CommonModule } from '@angular/common';
-import { MatDialogModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatDialogModule } from '@angular/material';
+import { MatProgressSpinnerModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
-
+import { ConfirmaDialogComponent } from './confirma-dialog.component';
 
 @NgModule({
   declarations: [ConfirmaDialogComponent],

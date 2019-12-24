@@ -10,11 +10,13 @@ import {
   MatButtonModule
 } from '@angular/material';
 
-import { ConfirmaDialogModule } from '../components/dialogs/confirma-dialog/confirma-dialog.module';
-import { DataBarComponent } from './ic-data-bar.component';
 import { CommonModule } from '@angular/common';
-import { ErrorDialogModule } from '../components/dialogs/error-dialog/error-dialog.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
+
+import { ConfirmaDialogModule } from './components/dialogs/confirma-dialog/confirma-dialog.module';
+import { DataBarComponent } from './ic-data-bar.component';
+import { ErrorDialogModule } from './components/dialogs/error-dialog/error-dialog.module';
+import { ConfirmaDialogComponent } from './components/dialogs/confirma-dialog/confirma-dialog.component';
 
 @NgModule({
   declarations: [DataBarComponent],
@@ -32,6 +34,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ConfirmaDialogModule,
     ErrorDialogModule
   ],
-  exports: [DataBarComponent]
+  exports: [DataBarComponent],
+  entryComponents: [ConfirmaDialogComponent]
 })
 export class DataBarModule { }

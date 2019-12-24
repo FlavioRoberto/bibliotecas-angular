@@ -19,8 +19,8 @@ import { EStatus } from './enum/estatus';
 import { EEventoClick } from './enum/eeventoclick';
 import { IDatabarBindOnClickService } from './contrato/IDataBarBindOnClickService';
 import { IDatabarBindStatusService } from '../public-api';
-import { DialogService } from '../components/dialogs/confirma-dialog/service/dialog.service';
-import { ErrorDialogService } from '../components/dialogs/error-dialog/service/error-dialog.service';
+import { DialogService } from './components/dialogs/confirma-dialog/service/dialog.service';
+import { ErrorDialogService } from './components/dialogs/error-dialog/service/error-dialog.service';
 
 @Component({
     selector: 'ic-data-bar',

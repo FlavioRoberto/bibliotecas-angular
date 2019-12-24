@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IcDatabarLibComponent } from './ic-databar-lib.component';
+import { TesteDatabarComponent } from './teste-databar.component';
 
-describe('IcDatabarLibComponent', () => {
-  let component: IcDatabarLibComponent;
-  let fixture: ComponentFixture<IcDatabarLibComponent>;
+describe('TesteDatabarComponent', () => {
+  let component: TesteDatabarComponent;
+  let fixture: ComponentFixture<TesteDatabarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IcDatabarLibComponent ]
+      declarations: [ TesteDatabarComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IcDatabarLibComponent);
+    fixture = TestBed.createComponent(TesteDatabarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
