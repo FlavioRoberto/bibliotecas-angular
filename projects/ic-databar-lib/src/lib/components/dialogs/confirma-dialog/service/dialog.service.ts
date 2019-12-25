@@ -6,7 +6,7 @@ import { ConfirmaDialogComponent } from '../confirma-dialog.component';
 @Injectable({
     providedIn: 'root'
 })
-export abstract class DialogService {
+export class DialogService {
 
     acaoOk: any;
     emProgresso: boolean;

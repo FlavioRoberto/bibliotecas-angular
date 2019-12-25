@@ -17,6 +17,7 @@ import { ConfirmaDialogModule } from './components/dialogs/confirma-dialog/confi
 import { DataBarComponent } from './ic-data-bar.component';
 import { ErrorDialogModule } from './components/dialogs/error-dialog/error-dialog.module';
 import { ConfirmaDialogComponent } from './components/dialogs/confirma-dialog/confirma-dialog.component';
+import { DialogService } from './components/dialogs/confirma-dialog/service/dialog.service';
 
 @NgModule({
   declarations: [DataBarComponent],
@@ -35,6 +36,7 @@ import { ConfirmaDialogComponent } from './components/dialogs/confirma-dialog/co
     ErrorDialogModule
   ],
   exports: [DataBarComponent],
-  entryComponents: [ConfirmaDialogComponent]
+  entryComponents: [ConfirmaDialogComponent],
+  providers: [DialogService]
 })
 export class DataBarModule { }
