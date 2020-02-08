@@ -1,14 +1,13 @@
 import { NgModule } from '@angular/core';
-import {
-  MatToolbarModule,
-  MatSidenavModule,
-  MatIconModule,
-  MatProgressSpinnerModule,
-  MatListModule,
-  MatDividerModule,
-  MatSnackBarModule,
-  MatButtonModule
-} from '@angular/material';
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';

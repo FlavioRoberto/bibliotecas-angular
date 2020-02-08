@@ -137,13 +137,13 @@
           "options": {
             "tsConfig": "projects/ic-databar-lib/tsconfig.lib.json",
             "project": "projects/ic-databar-lib/ng-package.json"
-          }
-        ,          "configurations": {
+          },
+          "configurations": {
             "production": {
               "tsConfig": "projects/ic-databar-lib/tsconfig.lib.prod.json"
             }
           }
-},
+        },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -177,13 +177,13 @@
           "options": {
             "tsConfig": "projects/ic-fieldset-lib/tsconfig.lib.json",
             "project": "projects/ic-fieldset-lib/ng-package.json"
-          }
-        ,          "configurations": {
+          },
+          "configurations": {
             "production": {
               "tsConfig": "projects/ic-fieldset-lib/tsconfig.lib.prod.json"
             }
           }
-},
+        },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -207,5 +207,8 @@
       }
     }
   },
-  "defaultProject": "ic-databar-lib"
+  "defaultProject": "ic-databar-lib",
+  "cli": {
+    "analytics": false
+  }
 }
