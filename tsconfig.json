@@ -30,6 +30,10 @@
       ],
       "ic-fieldset-lib/*": [
         "dist/ic-fieldset-lib/*"
+      ],
+      "ic-expansivel-table": [
+        "dist/ic-expansivel-table/ic-expansivel-table",
+        "dist/ic-expansivel-table"
       ]
     }
   },

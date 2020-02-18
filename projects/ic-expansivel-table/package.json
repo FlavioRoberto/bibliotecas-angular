@@ -1,0 +1,12 @@
+{
+  "name": "@breaking_dev/ic-expansivel-table",
+  "version": "0.0.1",
+  "whitelistedNonPeerDependencies": {
+    "@angular/material": "^8.2.3"
+  },
+  "peerDependencies": {
+    "@angular/common": "^9.0.0",
+    "@angular/core": "^9.0.0",
+    "tslib": "^1.10.0"
+  }
+}
