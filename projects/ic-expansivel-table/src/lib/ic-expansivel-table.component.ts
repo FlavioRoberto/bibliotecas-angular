@@ -70,7 +70,7 @@ export class IcExpansivelTableComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     event.preventDefault();
 
-    if (this.acaoSelecionada === acao.descricao) {
+    if (this.acaoSelecionada === acao.descricao && acao.expandir) {
       this.fecharAba();
       return;
     }
