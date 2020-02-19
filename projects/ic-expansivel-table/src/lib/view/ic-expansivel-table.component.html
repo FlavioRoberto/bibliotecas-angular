@@ -59,14 +59,16 @@
           fxlayoutAlign="center center"
           class="row-btn-mobile"
         >
-          <!-- [disabled]="desabilitarBotoes" -->
-          <mat-icon
+          <button
+            mat-button
+            [disabled]="desabilitarBotoes"
             class="btn-expansivel"
             [matTooltip]="acao.descricao"
             (click)="onClick($event, element, acao, i)"
-            [color]="acao.cor"
-            >{{ acao.icone }}</mat-icon
+            color="primary"
           >
+            <mat-icon> {{ acao.icone }} </mat-icon>
+          </button>
         </div>
       </mat-cell>
     </ng-container>

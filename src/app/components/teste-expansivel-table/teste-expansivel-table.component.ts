@@ -23,10 +23,16 @@ export class TesteExpansivelTableComponent implements OnInit {
     this.acoesExpansivelTable = [
       {
         descricao: 'Remover',
-        cor: 'primary',
         executaMetodo: () => { alert('teste'); },
         icone: 'delete',
         toolTip: 'Remover disciplina',
+        expandir: false
+      },
+      {
+        descricao: 'Editar',
+        executaMetodo: () => { alert('teste'); },
+        icone: 'edit',
+        toolTip: 'Editar disciplina',
         expandir: false
       }
     ];

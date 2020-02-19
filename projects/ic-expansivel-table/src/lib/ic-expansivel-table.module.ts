@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
 
 import { IcExpansivelTableComponent } from './ic-expansivel-table.component';
 
@@ -23,7 +24,8 @@ import { IcExpansivelTableComponent } from './ic-expansivel-table.component';
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonModule
   ],
   declarations: [IcExpansivelTableComponent],
   exports: [IcExpansivelTableComponent]
