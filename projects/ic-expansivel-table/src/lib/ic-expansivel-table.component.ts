@@ -27,8 +27,9 @@ export class IcExpansivelTableComponent implements OnInit, OnDestroy {
   @Input() templateRef: any;
   @Input() desabilitarBotoes = false;
   @Input() habilitarProgressBar = false;
-  @Input() servico: IExpansivelTableServico<any>;
   @Input() habilitarPesquisa = true;
+  @Input() habilitarPaginacao = true;
+  @Input() servico: IExpansivelTableServico<any>;
 
   public acaoSelecionada = '';
 

@@ -100,7 +100,7 @@
       style="overflow: hidden"
     >
     </mat-row>
-    {{ servico?.paginacaoExpansivelTable.posicao }}
+    {{ servico?.paginacaoExpansivelTable?.posicao }}
   </mat-table>
 
   <mat-paginator
@@ -112,7 +112,7 @@
     [hidePageSize]="true"
     [showFirstLastButtons]="true"
     [disabled]="desabilitarInputs"
-    *ngIf="servico?.paginacaoExpansivelTable"
+    *ngIf="servico?.paginacaoExpansivelTable && habilitarPaginacao"
   >
   </mat-paginator>
 </div>
