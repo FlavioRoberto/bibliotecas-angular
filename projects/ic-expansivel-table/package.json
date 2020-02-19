@@ -1,8 +1,9 @@
 {
   "name": "@breaking_dev/ic-expansivel-table",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "whitelistedNonPeerDependencies": {
-    "@angular/material": "^8.2.3"
+    "@angular/material": "^9.0.0",
+    "@angular/flex-layout": "^9.0.0-beta.29"
   },
   "peerDependencies": {
     "@angular/common": "^9.0.0",

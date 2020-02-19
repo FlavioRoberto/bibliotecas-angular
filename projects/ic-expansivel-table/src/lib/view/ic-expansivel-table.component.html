@@ -1,120 +1,116 @@
-<div class="mat-container"
-     id="ic-expansivel-table">
+<div class="mat-container" id="ic-expansivel-table">
+  <!-- FILTRO_PESQUISA  -->
+  <mat-form-field class="filtro" *ngIf="habilitarPesquisa">
+    <mat-label>
+      Pesquisar
+    </mat-label>
+    <mat-icon matPrefix class="mr-4 cor-search-icon">search</mat-icon>
+    <input
+      #inputPesquisa
+      matInput
+      [(ngModel)]="servico?.paginacaoExpansivelTable.filtro"
+      [disabled]="desabilitarInputs"
+      (ngModelChange)="pesquisarPorFiltro($event)"
+    />
+  </mat-form-field>
+  <!-- FILTRO_PESQUISA  -->
 
-    <!-- FILTRO_PESQUISA  -->
-    <mat-form-field class="filtro">
-        <mat-label>
-            Pesquisar
-        </mat-label>
-        <mat-icon matPrefix
-                  class="mr-4 cor-search-icon">search</mat-icon>
-        <input #inputPesquisa
-               matInput
-               [(ngModel)]="servico?.paginacaoExpansivelTable.filtro"
-               [disabled]="desabilitarInputs"
-               (ngModelChange)="pesquisarPorFiltro($event)" />
-    </mat-form-field>
-    <!-- FILTRO_PESQUISA  -->
+  <mat-progress-bar
+    *ngIf="pesquisando || habilitarProgressPesquisa"
+    mode="indeterminate"
+  ></mat-progress-bar>
 
-    <mat-progress-bar *ngIf="pesquisando || habilitarProgressPesquisa"
-                      mode="indeterminate"></mat-progress-bar>
+  <mat-table #table [dataSource]="servico.dataSource" matSort>
+    <!-- Position Column -->
 
-    <mat-table #table
-               [dataSource]="servico.dataSource"
-               matSort>
-        <!-- Position Column -->
+    <div *ngFor="let col of displayedColumns">
+      <ng-container matColumnDef="{{ col.def }}">
+        <!-- #HEADER_PADRAO -->
+        <mat-header-cell *matHeaderCellDef class=" centralizar-texto">
+          <span> {{ col.titulo }}</span>
+        </mat-header-cell>
+        <!-- #HEADER_PADRAO -->
 
-        <div *ngFor="let col of displayedColumns">
-            <ng-container matColumnDef="{{ col.def }}">
+        <mat-cell *matCellDef="let element" class="mat-cel-center">
+          <!-- #HEADER_MOBILE -->
+          <span class="mobile-label"> {{ col.titulo }}: </span>
+          <!-- #HEADER_MOBILE -->
 
-                <!-- #HEADER_PADRAO -->
-                <mat-header-cell *matHeaderCellDef
-                                 class=" centralizar-texto">
-                    <span> {{ col.titulo }}</span>
-                </mat-header-cell>
-                <!-- #HEADER_PADRAO -->
+          <span *ngIf="col.value">
+            {{ element[col.def][col.value] }}
+          </span>
+          <span *ngIf="!col.value">
+            {{ element[col.def] }}
+          </span>
+        </mat-cell>
+      </ng-container>
+    </div>
 
+    <ng-container matColumnDef="acao" *ngIf="acoesTabela">
+      <!-- #HEADER_PADRAO -->
+      <mat-header-cell *matHeaderCellDef class="centralizar-texto">
+        <span> Ações</span>
+      </mat-header-cell>
+      <!-- #HEADER_PADRAO -->
 
-
-                <mat-cell *matCellDef="let element"
-                          class="mat-cel-center">
-                    <!-- #HEADER_MOBILE -->
-                    <span class="mobile-label"> {{ col.titulo }}: </span>
-                    <!-- #HEADER_MOBILE -->
-
-                    <span *ngIf="col.value">
-                        {{ element[col.def][col.value] }}
-                    </span>
-                    <span *ngIf="!col.value">
-                        {{ element[col.def] }}
-                    </span>
-                </mat-cell>
-
-            </ng-container>
+      <mat-cell class="botoes-acao" *matCellDef="let element; let i = index">
+        <div
+          *ngFor="let acao of acoesTabela"
+          fxlayoutAlign="center center"
+          class="row-btn-mobile"
+        >
+          <!-- [disabled]="desabilitarBotoes" -->
+          <mat-icon
+            class="btn-expansivel"
+            [matTooltip]="acao.descricao"
+            (click)="onClick($event, element, acao, i)"
+            [color]="acao.cor"
+            >{{ acao.icone }}</mat-icon
+          >
         </div>
+      </mat-cell>
+    </ng-container>
 
-        <ng-container matColumnDef="acao"
-                      *ngIf="acoesTabela">
+    <ng-container matColumnDef="expandedDetail">
+      <mat-cell *matCellDef="let detail">
+        <ng-template [ngTemplateOutlet]="templateRef"></ng-template>
+      </mat-cell>
+    </ng-container>
 
-            <!-- #HEADER_PADRAO -->
-            <mat-header-cell *matHeaderCellDef
-                             class="centralizar-texto">
-                <span> Ações</span>
-            </mat-header-cell>
-            <!-- #HEADER_PADRAO -->
+    <mat-header-row *matHeaderRowDef="defColumns"></mat-header-row>
+    <mat-row
+      *matRowDef="let row; columns: defColumns"
+      class="element-row"
+      [class.cursor-pointer]="expandedElement == row"
+      [class.expanded]="expandedElement == row"
+      (click)="expandirTabela(row)"
+    ></mat-row>
 
-            <mat-cell fxLayout="row"
-                      *matCellDef="let element; let i = index">
+    <mat-row
+      *matRowDef="
+        let row;
+        columns: ['expandedDetail'];
+        when: isExpansionDetailRow
+      "
+      [@detailExpand]="
+        row.element == expandedElement ? 'expanded' : 'collapsed'
+      "
+      style="overflow: hidden"
+    >
+    </mat-row>
+    {{ servico?.paginacaoExpansivelTable.posicao }}
+  </mat-table>
 
-                <div *ngFor="let acao of acoesTabela"
-                     fxlayoutAlign="center center"
-                     class="row-btn-mobile">
-
-                    <!-- [disabled]="desabilitarBotoes" -->
-                    <mat-icon class="btn-expansivel"
-                              [matTooltip]="acao.descricao"
-                              (click)="onClick($event, element, acao, i)"
-                              [color]="acao.cor">{{ acao.icone }}</mat-icon>
-                </div>
-            </mat-cell>
-
-        </ng-container>
-
-        <ng-container matColumnDef="expandedDetail">
-            <mat-cell *matCellDef="let detail">
-                <ng-template [ngTemplateOutlet]="templateRef"></ng-template>
-            </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="defColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: defColumns"
-                 class="element-row"
-                 [class.cursor-pointer]="expandedElement == row"
-                 [class.expanded]="expandedElement == row"
-                 (click)="expandirTabela(row)"></mat-row>
-
-        <mat-row *matRowDef="
-                let row;
-                columns: ['expandedDetail'];
-                when: isExpansionDetailRow
-            "
-                 [@detailExpand]="
-                row.element == expandedElement ? 'expanded' : 'collapsed'
-            "
-                 style="overflow: hidden">
-        </mat-row>
-        {{servico?.paginacaoExpansivelTable.posicao}}
-    </mat-table>
-
-    <mat-paginator ngClass.lt-md="mat-paginator-sticky"
-                   [length]="servico?.paginacaoExpansivelTable.total"
-                   [pageSize]="servico?.paginacaoExpansivelTable.quantidade"
-                   [pageIndex]="servico?.paginacaoExpansivelTable.posicao - 1"
-                   (page)="paginar($event)"
-                   [hidePageSize]="true"
-                   [showFirstLastButtons]="true"
-                   [disabled]="desabilitarInputs"
-                   *ngIf="servico?.paginacaoExpansivelTable">
-    </mat-paginator>
-
+  <mat-paginator
+    ngClass.lt-md="mat-paginator-sticky"
+    [length]="servico?.paginacaoExpansivelTable.total"
+    [pageSize]="servico?.paginacaoExpansivelTable.quantidade"
+    [pageIndex]="servico?.paginacaoExpansivelTable.posicao - 1"
+    (page)="paginar($event)"
+    [hidePageSize]="true"
+    [showFirstLastButtons]="true"
+    [disabled]="desabilitarInputs"
+    *ngIf="servico?.paginacaoExpansivelTable"
+  >
+  </mat-paginator>
 </div>

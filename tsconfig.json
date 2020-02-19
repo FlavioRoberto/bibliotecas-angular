@@ -11,26 +11,13 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
     "paths": {
-      "ic-databar-lib": [
-        "dist/ic-databar-lib"
-      ],
-      "ic-databar-lib/*": [
-        "dist/ic-databar-lib/*"
-      ],
-      "ic-fieldset-lib": [
-        "dist/ic-fieldset-lib"
-      ],
-      "ic-fieldset-lib/*": [
-        "dist/ic-fieldset-lib/*"
-      ],
+      "ic-databar-lib": ["dist/ic-databar-lib"],
+      "ic-databar-lib/*": ["dist/ic-databar-lib/*"],
+      "ic-fieldset-lib": ["dist/ic-fieldset-lib"],
+      "ic-fieldset-lib/*": ["dist/ic-fieldset-lib/*"],
       "ic-expansivel-table": [
         "dist/ic-expansivel-table/ic-expansivel-table",
         "dist/ic-expansivel-table"
@@ -38,6 +25,8 @@
     }
   },
   "angularCompilerOptions": {
+    "enableIvy": true,
+    "allowEmptyCodegenFiles": true,
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
   }

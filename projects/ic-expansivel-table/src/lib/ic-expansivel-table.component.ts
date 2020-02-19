@@ -9,133 +9,136 @@ import { IExpansivelTableServico } from './contratos/ic-expansivel-table-servico
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
-    selector: 'ic-expansivel-table',
-    templateUrl: './view/ic-expansivel-table.component.html',
-    styleUrls: ['./view/ic-expansivel-table.component.scss'],
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0', visibility: 'hidden' })),
-            state('expanded', style({ height: '*', visibility: 'visible' })),
-            transition('expanded <=> collapsed', animate('250ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-        ]),
-    ],
+  selector: 'ic-expansivel-table',
+  templateUrl: './view/ic-expansivel-table.component.html',
+  styleUrls: ['./view/ic-expansivel-table.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0', visibility: 'hidden' })),
+      state('expanded', style({ height: '*', visibility: 'visible' })),
+      transition('expanded <=> collapsed', animate('250ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class IcExpansivelTableComponent implements OnInit, OnDestroy {
 
-    @Input() displayedColumns: ColumnDef[];
-    @Input() acoesTabela: AcoesExpansivelTable[];
-    @Input() templateRef: any;
-    @Input() desabilitarBotoes = false;
-    @Input() habilitarProgressBar = false;
-    @Input() servico: IExpansivelTableServico<any>;
+  @Input() displayedColumns: ColumnDef[];
+  @Input() acoesTabela: AcoesExpansivelTable[];
+  @Input() templateRef: any;
+  @Input() desabilitarBotoes = false;
+  @Input() habilitarProgressBar = false;
+  @Input() servico: IExpansivelTableServico<any>;
+  @Input() habilitarPesquisa = true;
 
-    public acaoSelecionada = '';
+  public acaoSelecionada = '';
 
-    timeoutPesquisa$: Subject<string> = new Subject<string>();
+  timeoutPesquisa$: Subject<string> = new Subject<string>();
 
-    @ViewChild('inputPesquisa', { static: false }) inputPesquisa: ElementRef;
+  @ViewChild('inputPesquisa', { static: false }) inputPesquisa: ElementRef;
 
-    public defColumns: string[];
-    public pesquisando = false;
-    public desabilitarBotoesPaginacao = false;
-    public expandedElement: any;
-    public isExpansionDetailRow = (i: number, row: object) => row.hasOwnProperty('detailRow');
+  public defColumns: string[];
+  public pesquisando = false;
+  public desabilitarBotoesPaginacao = false;
+  public expandedElement: any;
+  public isExpansionDetailRow = (i: number, row: object) => row.hasOwnProperty('detailRow');
 
-    ngOnInit(): void {
-        this.defColumns = this.displayedColumns.map(i => i.def);
+  ngOnInit(): void {
+    this.defColumns = this.displayedColumns.map(i => i.def);
 
-        if (this.acoesTabela.length > 0) {
-            this.defColumns.push('acao');
-        }
-
-        this.timeoutPesquisa$.pipe(
-            debounceTime(1000),
-            tap(() => this.exibirProgressBar(true))
-        ).subscribe(res => {
-            this.servico.paginacaoExpansivelTable.filtro = res;
-            this.servico.metodoPesquisa(this.servico.paginacaoExpansivelTable, () => {
-                this.exibirProgressBar(false);
-                this.setFocusInputPesquisa();
-            });
-        });
+    if (this.acoesTabela.length > 0) {
+      this.defColumns.push('acao');
     }
 
+    this.timeoutPesquisa$.pipe(
+      debounceTime(1000),
+      tap(() => this.exibirProgressBar(true))
+    ).subscribe(res => {
+      this.servico.paginacaoExpansivelTable.filtro = res;
+      this.servico.metodoPesquisa(this.servico.paginacaoExpansivelTable, () => {
+        this.exibirProgressBar(false);
+        this.setFocusInputPesquisa();
+      });
+    });
+  }
 
-    ngOnDestroy(): void {
-        this.timeoutPesquisa$.unsubscribe();
+
+  ngOnDestroy(): void {
+    this.timeoutPesquisa$.unsubscribe();
+  }
+
+  onClick(event, element, acao: AcoesExpansivelTable, index): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (this.acaoSelecionada === acao.descricao) {
+      this.fecharAba();
+      return;
     }
 
-    onClick(event, element, acao: AcoesExpansivelTable, index): void {
-        event.stopPropagation();
-        event.preventDefault();
-
-        if (this.acaoSelecionada === acao.descricao) {
-            this.fecharAba();
-            return;
-        }
-
-        if (this.desabilitarBotoes) {
-            return;
-        }
-
-        this.acaoSelecionada = acao.descricao;
-
-        const i = index / 2;
-
-        this.expandedElement = element;
-
-        acao.executaMetodo(element, i);
+    if (this.desabilitarBotoes) {
+      return;
     }
 
-    get desabilitarInputs(): boolean {
-        return this.desabilitarBotoesPaginacao || this.desabilitarBotoes;
+    const i = index / 2;
+
+    this.acaoSelecionada = acao.descricao;
+
+    if (acao.expandir) {
+      this.expandedElement = element;
     }
 
-    get habilitarProgressPesquisa(): boolean {
-        return this.pesquisando || this.habilitarProgressBar;
-    }
+    acao.executaMetodo(element, i);
+  }
 
-    public setFocusInputPesquisa(): void {
-        setTimeout(() => {
-            this.inputPesquisa.nativeElement.focus();
-        }, 150);
-    }
+  get desabilitarInputs(): boolean {
+    return this.desabilitarBotoesPaginacao || this.desabilitarBotoes;
+  }
 
-    public pesquisarPorFiltro(filtro: string): void {
-        this.servico.paginacaoExpansivelTable.posicao = 0;
-        this.timeoutPesquisa$.next(filtro);
-    }
+  get habilitarProgressPesquisa(): boolean {
+    return this.pesquisando || this.habilitarProgressBar;
+  }
 
-    public expandirTabela(row): void {
-        if (this.expandedElement === row) {
-            this.fecharAba();
-        }
-    }
+  public setFocusInputPesquisa(): void {
+    setTimeout(() => {
+      this.inputPesquisa.nativeElement.focus();
+    }, 150);
+  }
 
-    public paginar(index: MatPaginator): void {
-        this.exibirProgressBar(true);
-        this.servico.paginacaoExpansivelTable.posicao = index.pageIndex + 1;
-        this.servico.paginacaoExpansivelTable.quantidade = index.pageSize;
-        this.servico.metodoPesquisa(this.servico.paginacaoExpansivelTable, () => this.exibirProgressBar(false));
-    }
+  public pesquisarPorFiltro(filtro: string): void {
+    this.servico.paginacaoExpansivelTable.posicao = 0;
+    this.timeoutPesquisa$.next(filtro);
+  }
 
-    private fecharAba(): void {
-        this.expandedElement = '';
-        this.acaoSelecionada = '';
+  public expandirTabela(row): void {
+    if (this.expandedElement === row) {
+      this.fecharAba();
     }
+  }
+
+  public paginar(index: MatPaginator): void {
+    this.exibirProgressBar(true);
+    this.servico.paginacaoExpansivelTable.posicao = index.pageIndex + 1;
+    this.servico.paginacaoExpansivelTable.quantidade = index.pageSize;
+    this.servico.metodoPesquisa(this.servico.paginacaoExpansivelTable, () => this.exibirProgressBar(false));
+  }
+
+  private fecharAba(): void {
+    this.expandedElement = '';
+    this.acaoSelecionada = '';
+  }
 
 
-    private exibirProgressBar(habilitar: boolean): void {
-        this.desabilitarBotoes = habilitar;
-        this.pesquisando = habilitar;
-    }
+  private exibirProgressBar(habilitar: boolean): void {
+    this.desabilitarBotoes = habilitar;
+    this.pesquisando = habilitar;
+  }
 }
 
 export class ColumnDef {
-    constructor(
-        public titulo: string,
-        public def: string,
-        public value: string = '',
-        // public pipe?: TiposPipes
-    ) { }
+  constructor(
+    public titulo: string,
+    public def: string,
+    public value: string = '',
+    // public pipe?: TiposPipes
+  ) { }
 }
