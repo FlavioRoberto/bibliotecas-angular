@@ -1,5 +1,5 @@
 import { Teste } from './teste';
-import { IDataEntidadePaginada } from '@breaking_dev/ic-databar-lib';
+import { IDataEntidadePaginada } from 'projects/ic-databar-lib/src/lib/contrato/IDataEntidadePaginada';
 
 export class TestePaginado implements IDataEntidadePaginada<Teste> {
   total = 0;

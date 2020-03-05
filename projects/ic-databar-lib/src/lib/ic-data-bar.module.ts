@@ -1,22 +1,20 @@
 import { NgModule } from '@angular/core';
 
+import { ConfirmaDialogModule } from '../components/dialogs/confirma-dialog/confirma-dialog.module';
+import { DataBarComponent } from './ic-data-bar.component';
+import { CommonModule } from '@angular/common';
+import { ErrorDialogModule } from '../components/dialogs/error-dialog/error-dialog.module';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { DatabarService } from './services/ic-databar.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
-
-import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
-
-import { ConfirmaDialogModule } from './components/dialogs/confirma-dialog/confirma-dialog.module';
-import { DataBarComponent } from './ic-data-bar.component';
-import { ErrorDialogModule } from './components/dialogs/error-dialog/error-dialog.module';
-import { ConfirmaDialogComponent } from './components/dialogs/confirma-dialog/confirma-dialog.component';
-import { DialogService } from './components/dialogs/confirma-dialog/service/dialog.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [DataBarComponent],
@@ -30,12 +28,12 @@ import { DialogService } from './components/dialogs/confirma-dialog/service/dial
     MatDividerModule,
     MatSnackBarModule,
     MatButtonModule,
+    MatTooltipModule,
     FlexLayoutModule,
     ConfirmaDialogModule,
     ErrorDialogModule
   ],
   exports: [DataBarComponent],
-  entryComponents: [ConfirmaDialogComponent],
-  providers: [DialogService]
+  providers: [DatabarService]
 })
 export class DataBarModule { }

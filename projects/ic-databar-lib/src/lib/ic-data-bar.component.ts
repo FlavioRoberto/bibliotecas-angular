@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import {MatSnackBar} from '@angular/material/snack-bar';
-import { MatDrawer } from '@angular/material/sidenav';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 import { IDataEntidadePaginada } from './contrato/IDataEntidadePaginada';
 import { IDataBarBindService } from './contrato/IDataBarService';
@@ -20,8 +20,11 @@ import { EStatus } from './enum/estatus';
 import { EEventoClick } from './enum/eeventoclick';
 import { IDatabarBindOnClickService } from './contrato/IDataBarBindOnClickService';
 import { IDatabarBindStatusService } from '../public-api';
-import { DialogService } from './components/dialogs/confirma-dialog/service/dialog.service';
-import { ErrorDialogService } from './components/dialogs/error-dialog/service/error-dialog.service';
+import { DialogService } from '../components/dialogs/confirma-dialog/service/dialog.service';
+import { ErrorDialogService } from '../components/dialogs/error-dialog/service/error-dialog.service';
+import { ACAO_PAGINACAO } from './constants/ic-databar.constants';
+import { DatabarService } from './services/ic-databar.service';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
   selector: 'ic-data-bar',
@@ -36,17 +39,21 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
   @Input() desabilitarBotaoRemover: boolean;
   @Output() statusChanged = new EventEmitter<EStatus>();
 
-  @ViewChild('drawer', { static: false }) drawer: MatDrawer;
+  public status: EStatus;
+  public EStatus = EStatus;
+  public emProgresso = false;
+  private $setStatus: Subscription;
 
-  status: EStatus;
-  EStatus = EStatus;
-  emProgresso = false;
+  private _statusAnterior: EStatus;
+  private _dadosAnterioresFormulario: T;
+
+  @ViewChild('drawer', { static: false }) drawer: MatDrawer;
 
   constructor(
     private _dialog: DialogService,
     private _dialogErro: ErrorDialogService,
-    private snackBar: MatSnackBar,
     private _elementRef: ElementRef,
+    private _databarService: DatabarService
   ) { }
 
   ngOnInit(): void {
@@ -54,9 +61,175 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
     this.setProgresso(false);
     this.novaPesquisa();
     this._submeterFormularioOnEnter();
+    this.observarSetStatus();
+  }
 
+  ngOnDestroy(): void {
+    if (this.servicoBind.onClickEnter)
+      this.servicoBind.onClickEnter.unsubscribe();
+
+    if (this.$setStatus)
+      this.$setStatus.unsubscribe();
+  }
+
+  @HostListener('document:click', ['$event'])
+  fecharSidenav(event): void {
+    if (this._elementRef.nativeElement.contains(event.target)) {
+      return;
+    }
+    this.drawer.close();
+  }
+
+  onClickReverter(): void {
+    this._emitirEventoClick(EEventoClick.onClickReverter);
+    this.reverter();
+    this._emitirEventoClick(EEventoClick.afterClickReverter);
+  }
+
+  onClickNovaPesquisa(): void {
+    this._emitirEventoClick(EEventoClick.onClickNovaPesquisa);
+    this.novaPesquisa();
+    this._emitirEventoClick(EEventoClick.afterClickNovaPesquisa);
+  }
+
+  reverter(): void {
+    this._emitirEventoClick(EEventoClick.onClickReverter);
+    // console.log('antes de setar valores', this._dadosAnterioresFormulario);
+    this.form.patchValue(this._dadosAnterioresFormulario);
+
+    console.log('formulario apos colocar valores', this.form);
+
+    if (this._statusAnterior == EStatus.dadosCarregados)
+      this._databarService.desabilitarForm(this.form);
+    else
+      this._databarService.habilitarForm(this.form);
+
+    this.setStatus(this._statusAnterior);
+    this._emitirEventoClick(EEventoClick.afterClickReverter);
+  }
+
+  novaPesquisa(): void {
+    this._databarService.habilitarForm(this.form);
+    this.form.reset({ emitEvent: false, onlySelf: true });
+    this.entidadePaginada.entidade = this.form.value;
+    this.entidadePaginada.posicao = 0;
+    this.entidadePaginada.total = 0;
+    this.setStatus(EStatus.novaPesquisa);
+  }
+
+  pesquisar(): void {
+    this._setDadosAnteriores(this.status);
+    this.setStatus(EStatus.pesquisando);
+    this.entidadePaginada.entidade = [].concat(this._getEntidade());
+    this._paginar();
+    this.drawer.close();
+  }
+
+  inserir(): void {
+    this._emitirEventoClick(EEventoClick.onClickInserir);
+    this._clickInserir();
+    this._emitirEventoClick(EEventoClick.afterClickInserir);
+  }
+
+  editar(): void {
+    this._emitirEventoClick(EEventoClick.onClickEditar);
+    this._clickEditar();
+    this._emitirEventoClick(EEventoClick.afterClickEditar);
+  }
+
+  remover(): void {
+    this._emitirEventoClick(EEventoClick.onClickRemover);
+    this._clickRemover();
+    this._emitirEventoClick(EEventoClick.afterClickRemover);
+  }
+
+  proximo(): void {
+    this._paginar('proximo');
+  }
+
+  anterior(): void {
+    this._paginar('anterior');
+  }
+
+  ultimo(): void {
+    this._paginar('ultimo');
+  }
+
+  primeiro(): void {
+    this._paginar('primeiro');
+  }
+
+  salvar(): void {
+    this._emitirEventoClick(EEventoClick.onClickSalvar);
+
+    switch (this.status) {
+      case EStatus.inserindo:
+        this.setStatus(EStatus.salvando);
+        this.setProgresso(true);
+        this.servicoBind.criar()
+          .pipe(finalize(() => {
+            this._emitirEventoClick(EEventoClick.afterClickSalvar);
+          }))
+          .subscribe(
+            success => {
+              this.setProgresso(false);
+
+              this._databarService.openSnackBar(
+                'Registro salvo com sucesso!',
+                'sucesso'
+              );
+              this.form.patchValue(success);
+
+              this.setProgresso(false)
+
+              this.setStatus(EStatus.dadosCarregados);
+
+              this.drawer.close();
+
+              this._databarService.desabilitarForm(this.form);
+            },
+            () => {
+              this.setProgresso(false);
+              this.setStatus(EStatus.inserindo);
+            });
+
+        break;
+
+      case EStatus.editando:
+        this.setStatus(EStatus.salvando);
+        this.setProgresso(true);
+        this.servicoBind.editar()
+          .pipe(finalize(() => {
+            this._emitirEventoClick(EEventoClick.afterClickSalvar);
+          }))
+          .subscribe(
+            success => {
+              this._databarService.openSnackBar(
+                'Registro editado com sucesso!',
+                'sucesso'
+              );
+
+              this.form.patchValue(success);
+
+              this.setProgresso(false)
+
+              this.setStatus(EStatus.dadosCarregados);
+
+              this._databarService.desabilitarForm(this.form);
+
+              this.drawer.close();
+            },
+            () => {
+              this.setProgresso(false);
+              this.setStatus(EStatus.editando);
+            });
+        break;
+    }
+  }
+
+  private observarSetStatus(): void {
     if ((this.servicoBind as IDatabarBindStatusService<T>).setStatus) {
-      (this.servicoBind as IDatabarBindStatusService<T>).setStatus
+      this.$setStatus = (this.servicoBind as IDatabarBindStatusService<T>).setStatus
         .subscribe(status => {
           switch (status) {
             case EStatus.editando:
@@ -85,16 +258,9 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.servicoBind.onClickEnter.unsubscribe();
-  }
-
-  @HostListener('document:click', ['$event'])
-  fecharSidenav(event): void {
-    if (this._elementRef.nativeElement.contains(event.target)) {
-      return;
-    }
-    this.drawer.close();
+  private _resetarContadorPaginacao(): void {
+    this.entidadePaginada.posicao = 0;
+    this.entidadePaginada.total = 0;
   }
 
   private validarPropertsObrigatorias(): any {
@@ -107,27 +273,6 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
         'É obrigatório ter uma entidade paginada vinculada'
       );
     }
-  }
-
-  private setProgresso(progresso: boolean): any {
-    if (!this.form) {
-      return;
-    }
-
-    this.emProgresso = progresso;
-
-    if (progresso) {
-      this.form.disable();
-    } else {
-      this.form.enable();
-    }
-  }
-
-  private openSnackBar(message: string, classe: string): void {
-    this.snackBar.open(message, '', {
-      duration: 3000,
-      panelClass: classe
-    });
   }
 
   private setStatus(status: EStatus): void {
@@ -151,122 +296,34 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
     });
   }
 
-  novaPesquisa(): void {
-    this.form.enable();
-    this.form.reset();
-    this.entidadePaginada.entidade = this.form.value;
-    this.entidadePaginada.posicao = 0;
-    this.entidadePaginada.total = 0;
-    this.setStatus(EStatus.novaPesquisa);
-  }
-
-  onClickNovaPesquisa(): void {
-    this._emitirEventoClick(EEventoClick.onClickNovaPesquisa)
-    this.novaPesquisa();
-    this._emitirEventoClick(EEventoClick.afterClickNovaPesquisa)
-  }
-
-
-  pesquisar(): void {
-    this.setStatus(EStatus.pesquisando);
-    this.entidadePaginada.entidade = [].concat(this._getEntidade());
-    this._paginar();
-    this.drawer.close();
-  }
-
   private _clickInserir(): void {
-    this.form.enable();
-    this.form.reset();
+    this._setDadosAnteriores(this.status);
+    this._resetarContadorPaginacao();
+    this._databarService.habilitarForm(this.form);
+
+    this.form.reset({ emitEvent: false, onlySelf: true });
     this.drawer.close();
     this.setStatus(EStatus.inserindo);
   }
 
-  inserir(): void {
-    this._emitirEventoClick(EEventoClick.onClickInserir);
-    this._clickInserir();
-    this._emitirEventoClick(EEventoClick.afterClickInserir);
+  private _setDadosAnteriores(status: EStatus) {
+    this._dadosAnterioresFormulario = this.form.getRawValue();
+    this._statusAnterior = status;
   }
 
   private _clickEditar(): void {
-    this.form.enable();
+    this._setDadosAnteriores(this.status);
+    this._databarService.habilitarForm(this.form);
+
     this.form.markAllAsTouched();
     this.drawer.close();
     this.setStatus(EStatus.editando);
-  }
-
-  editar(): void {
-    this._emitirEventoClick(EEventoClick.onClickEditar);
-    this._clickEditar();
-    this._emitirEventoClick(EEventoClick.afterClickEditar);
   }
 
   private _clickRemover(): void {
     this.setStatus(EStatus.removendo);
     this._exibirDialogConfirmacao();
     this.drawer.close();
-  }
-
-  remover(): void {
-    this._emitirEventoClick(EEventoClick.onClickRemover);
-    this._clickRemover();
-    this._emitirEventoClick(EEventoClick.afterClickRemover);
-  }
-
-  salvar(): void {
-    switch (this.status) {
-      case EStatus.inserindo:
-        this.setStatus(EStatus.salvando);
-        this.setProgresso(true);
-        this.servicoBind.criar().subscribe(
-          success => {
-            this.setProgresso(false);
-
-            this.openSnackBar(
-              'Registro salvo com sucesso!',
-              'sucesso'
-            );
-            this.form.patchValue(success);
-
-            this.setStatus(EStatus.dadosCarregados);
-
-            this.form.disable();
-
-            this.drawer.close();
-          },
-          () => {
-            this.setProgresso(false);
-            this.setStatus(EStatus.inserindo);
-          }
-        );
-        break;
-
-      case EStatus.editando:
-        this.setStatus(EStatus.salvando);
-        this.setProgresso(true);
-        this.servicoBind.editar().subscribe(
-          success => {
-            this.setProgresso(false);
-
-            this.openSnackBar(
-              'Registro editado com sucesso!',
-              'sucesso'
-            );
-
-            this.form.patchValue(success);
-
-            this.setStatus(EStatus.dadosCarregados);
-
-            this.form.disable();
-
-            this.drawer.close();
-          },
-          () => {
-            this.setProgresso(false);
-            this.setStatus(EStatus.editando);
-          }
-        );
-        break;
-    }
   }
 
   private _emitirEventoClick(evento: EEventoClick): void {
@@ -289,7 +346,7 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
           this._dialog.closeDialog();
           this.novaPesquisa();
           this._dialog.emProgresso = false;
-          this.openSnackBar('Removido com sucesso', 'sucesso');
+          this._databarService.openSnackBar('Removido com sucesso', 'sucesso');
         },
         () => this._acaoCloseDialogConfirmacao()
       );
@@ -303,7 +360,7 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
     );
   }
 
-  private _paginar(acao?: string): void {
+  private _paginar(acao?: ACAO_PAGINACAO): void {
     this.setStatus(EStatus.pesquisando);
 
     if (this.entidadePaginada.entidade == null) {
@@ -341,13 +398,13 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
             'Atenção',
             'Nenhum registro foi encontrado!'
           );
-          this.status = EStatus.novaPesquisa;
+          this.setStatus(EStatus.novaPesquisa);
           return;
         }
 
         if (success.entidade == null) {
-          this._resetForm();
-          this.status = EStatus.novaPesquisa;
+          this._databarService.resetForm(this.form, this.entidadePaginada);
+          this.setStatus(EStatus.novaPesquisa);
           return;
         }
 
@@ -364,38 +421,49 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
 
         this.setProgresso(false);
 
-        this.form.disable();
+        this._databarService.desabilitarForm(this.form);
       },
       error => {
         console.error('erro paginação', error);
         this.setStatus(EStatus.dadosCarregados);
         this.entidadePaginada.posicao = posicaoAnterior;
         this.setProgresso(false);
-        this.form.disable();
-      }
-    );
+        this._databarService.desabilitarForm(this.form);
+      });
   }
 
-  proximo(): void {
-    this._paginar('proximo');
+  private setProgresso(progresso: boolean): boolean {
+    if (!this.form) {
+      return;
+    }
+
+    this.emProgresso = progresso;
+
+    if (progresso) {
+      this._databarService.desabilitarForm(this.form);
+    }
+
+    if (!progresso) {
+      this._databarService.habilitarForm(this.form);
+    }
   }
 
-  anterior(): void {
-    this._paginar('anterior');
+  get inserindoOuEditando(): boolean {
+    return (this.status === EStatus.inserindo ||
+      this.status === EStatus.editando)
   }
 
-  ultimo(): void {
-    this._paginar('ultimo');
+  get desabilitarBotoesPaginacaoProximo(): boolean {
+    return this.inserindoOuEditando ||
+      this.entidadePaginada.posicao >= this.entidadePaginada.total ||
+      this.emProgresso;
   }
 
-  primeiro(): void {
-    this._paginar('primeiro');
+  get desabilitarBotoesPaginacaoAnterior(): boolean {
+
+    return this.inserindoOuEditando ||
+      this.entidadePaginada.posicao <= 1 ||
+      this.emProgresso;
   }
 
-  private _resetForm(): void {
-    this.form.reset();
-    this.entidadePaginada.entidade = null;
-    this.entidadePaginada.posicao = 0;
-    this.entidadePaginada.total = 0;
-  }
 }

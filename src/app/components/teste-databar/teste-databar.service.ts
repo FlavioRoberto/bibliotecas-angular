@@ -2,9 +2,12 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs';
-import { TestePaginado } from '../model/teste.paginado';
-import { Teste } from '../model/teste';
-import { DatabarEventClickService, EStatus, IDatabarBindOnClickService } from '@breaking_dev/ic-databar-lib';
+import { IDatabarBindOnClickService } from 'projects/ic-databar-lib/src/lib/contrato/IDataBarBindOnClickService';
+import { DatabarEventClickService } from 'projects/ic-databar-lib/src/lib/services/ic-databar-event-click.service';
+import { EStatus } from 'projects/ic-databar-lib/src/lib/enum/estatus';
+import { Teste } from './model/teste';
+import { TestePaginado } from './model/teste.paginado';
+import { delay } from 'rxjs/operators';
 
 @Injectable()
 export class TesteDatabarService implements IDatabarBindOnClickService<Teste> {
@@ -26,31 +29,29 @@ export class TesteDatabarService implements IDatabarBindOnClickService<Teste> {
   }
 
   criar(): Observable<Teste> {
-    return of(this.getEntidade());
+    return of(this.getEntidade()).pipe(delay(1000));
   }
 
   editar(): Observable<Teste> {
-    return of(this.getEntidade());
+    return of(this.getEntidade()).pipe(delay(1000));;
   }
 
   remover(): Observable<Teste> {
-    return of(this.getEntidade());
+    return of(null);
   }
 
   listarPaginacao(entidadePaginada: TestePaginado): Observable<TestePaginado> {
-    console.log(this.formgroup.getRawValue());
-    entidadePaginada.entidade = this.getDadosMock();
-    return of(entidadePaginada);
+    entidadePaginada.entidade = [{ nome: 'Teste' }];
+    entidadePaginada.total = 10;
+    entidadePaginada.posicao = 1;
+    return of(entidadePaginada).pipe(delay(1000));
   }
 
-  private getDadosMock(): Teste[] {
+  listarTecnologiaFavorita(): string[] {
     return [
-      {
-        codigo: 1,
-        nome: 'Teste',
-        sobrenome: 'Teste 2'
-      }
-    ] as Teste[];
+      'Angular',
+      'Android',
+      '.NET'
+    ]
   }
-
 }

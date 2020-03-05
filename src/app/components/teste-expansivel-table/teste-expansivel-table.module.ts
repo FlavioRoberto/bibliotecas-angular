@@ -1,15 +1,13 @@
 import { NgModule } from '@angular/core';
-import { TesteExpansivelTableComponent } from './teste-expansivel-table.component';
+import { CommonModule } from '@angular/common';
 import { IcExpansivelTableModule } from '@breaking_dev/ic-expansivel-table';
+import { TesteExpansivelTableComponent } from './teste-expansivel-table.component';
 import { TesteExpansivelTableService } from './teste-expansivel-table.service';
 
 @NgModule({
-  imports: [IcExpansivelTableModule],
   declarations: [TesteExpansivelTableComponent],
+  imports: [CommonModule, IcExpansivelTableModule],
   exports: [TesteExpansivelTableComponent],
-  providers: [
-    TesteExpansivelTableService
-  ]
+  providers: [TesteExpansivelTableService]
 })
-export class TesteExpansivelTableModule {
-}
+export class TesteExpansivelTableModule { }

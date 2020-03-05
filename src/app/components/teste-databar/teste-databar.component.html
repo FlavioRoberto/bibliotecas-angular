@@ -1,7 +1,55 @@
- <ic-data-bar
-    fxFlex-="100"
-    [form]="form"
-    [entidadePaginada]="entidadePaginada"
-    [servicoBind]="servicoDataBarBind"
-    (status)="onStatusChanged($event)"
-  ></ic-data-bar>
+<mat-card class="content"
+          fxLayout="column"
+          fxLayoutGap="8px">
+
+  <ic-data-bar fxFlex="100"
+               [form]="form"
+               [entidadePaginada]="entidadePaginada"
+               [servicoBind]="servicoDataBarBind"
+               (status)="onStatusChanged($event)"></ic-data-bar>
+
+  <form [formGroup]="form"
+        fxLayout="row"
+        fxFlex="100"
+        fxLayoutGap="12px">
+
+    <!-- NOME -->
+    <mat-form-field appearance="outline">
+      <mat-label>Nome</mat-label>
+      <input matInput
+             formControlName="nome">
+    </mat-form-field>
+    <!-- NOME -->
+
+    <!-- TECNOLOGIA_FAVORITA -->
+    <mat-form-field appearance="outline">
+      <mat-label>Tecnologia favorita</mat-label>
+      <mat-select formControlName="tecnologiaFavorita">
+        <mat-option *ngFor="let tecnologia of tecnologiaFavorita"
+                    [value]="tecnologia">
+          {{tecnologia}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- TECNOLOGIA_FAVORITA -->
+
+    <!-- <div
+         fxLayout.gt-sm="row"
+         fxLayout="column"
+         *ngFor="let lista of listaFormArray; let i = index">
+        <mat-form-field appearance="outline">
+          <mat-label>Item</mat-label>
+          <input matInput
+                 [formControl]="lista.get('id')"
+                 [value]="lista.get('id').value"
+                 >
+        </mat-form-field>
+    </div> -->
+
+  </form>
+
+  <button (click)="adicionar()">
+    Clica aki fi
+  </button>
+
+</mat-card>

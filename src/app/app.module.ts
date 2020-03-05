@@ -1,23 +1,17 @@
-//import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { DataBarModule } from 'projects/ic-databar-lib/src/lib/ic-data-bar.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { IcFieldsetModule } from 'projects/ic-fieldset-lib/src/lib/ic-fieldset.module';
-import { TesteDatabarModule } from './components/teste-databar/teste-databar.module';
 import { TesteExpansivelTableModule } from './components/teste-expansivel-table/teste-expansivel-table.module';
-
+import { TesteDatabarModule } from './components/teste-databar/teste-databar.module';
+import { TesteFieldsetModule} from './components/teste-fieldset/teste-fieldset.module';
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
-    BrowserAnimationsModule,
+    CommonModule,
+    TesteExpansivelTableModule,
     TesteDatabarModule,
-    IcFieldsetModule,
-    TesteExpansivelTableModule
-  ],
+    TesteFieldsetModule],
   providers: [],
   bootstrap: [AppComponent]
 })

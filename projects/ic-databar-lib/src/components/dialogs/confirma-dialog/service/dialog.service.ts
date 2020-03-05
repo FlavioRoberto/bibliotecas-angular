@@ -1,12 +1,12 @@
-import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { Injectable } from '@angular/core';
 
 import { ConfirmaDialogComponent } from '../confirma-dialog.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Injectable({
     providedIn: 'root'
 })
-export class DialogService {
+export abstract class DialogService {
 
     acaoOk: any;
     emProgresso: boolean;

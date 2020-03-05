@@ -1,35 +1,57 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
-
-import { OnInitDataBar, EStatus } from '@breaking_dev/ic-databar-lib';
-
-import { TesteDatabarService } from './services/teste-databar.service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators, FormArray, FormControl, AbstractControl, FormGroup } from '@angular/forms';
+import { OnInitDataBar } from 'projects/ic-databar-lib/src/lib/contrato/OnInitDataBar';
+import { EStatus } from 'projects/ic-databar-lib/src/lib/enum/estatus';
+import { TesteDatabarService } from './teste-databar.service';
 import { TestePaginado } from './model/teste.paginado';
 
 @Component({
-  selector: 'ic-teste-databar',
+  selector: 'ap-teste-databar',
   templateUrl: './teste-databar.component.html',
   styleUrls: ['./teste-databar.component.scss']
 })
-export class TesteDatabarComponent extends OnInitDataBar<any>  {
+export class TesteDatabarComponent extends OnInitDataBar<any> implements OnInit {
 
-  constructor(private _formBuilder: FormBuilder) {
+  public tecnologiaFavorita: string[];
+
+  constructor(private formBuilder: FormBuilder) {
     super();
-
-    this.form = this._formBuilder.group({
-      codigo: [null],
-      nome: [null],
-      sobrenome: [null]
-    });
   }
 
   onInit(): void {
-    this.servicoDataBarBind = new TesteDatabarService(this.form);
     this.entidadePaginada = new TestePaginado();
+    this.form = this._construirFormulario();
+    // this.form.valueChanges.subscribe(value => console.log(value));
+    this.servicoDataBarBind = new TesteDatabarService(this.form);
+    this.tecnologiaFavorita = (this.servicoDataBarBind as TesteDatabarService).listarTecnologiaFavorita();
   }
 
   onStatusChanged(status: EStatus): void {
+    this.statusDataBar = status;
     this.servicoDataBarBind.status = status;
+  }
+
+  private _construirFormulario() {
+    return this.formBuilder.group({
+      nome: [null, [Validators.required]],
+      tecnologiaFavorita: [null],
+      formarray: this.formBuilder.array([])
+    }, { updateOn: 'blur' });
+  }
+
+  adicionar(): void {
+    Array.from({ length: 10 }).map((item, index) => {
+      (this.form.get('formarray') as FormArray)
+        .push(
+          new FormGroup({
+            id: new FormControl(`${item} - ${index}`)
+          })
+        )
+    })
+  }
+
+  get listaFormArray(): AbstractControl[] {
+    return (this.form.get('formarray') as FormArray).controls;
   }
 
 }
