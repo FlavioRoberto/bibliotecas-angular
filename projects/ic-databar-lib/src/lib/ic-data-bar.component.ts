@@ -59,7 +59,8 @@ export class DataBarComponent<T> implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.validarPropertsObrigatorias();
     this.setProgresso(false);
-    this.novaPesquisa();
+    this.status = EStatus.novaPesquisa;
+    this.form.disable();
     this._submeterFormularioOnEnter();
     this.observarSetStatus();
   }

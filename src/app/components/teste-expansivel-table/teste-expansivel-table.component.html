@@ -3,10 +3,8 @@
   [acoesTabela]="acoesTabela"
   [templateRef]="contentExpansivelTable"
   [servico]="servicoExpansivelTable"
-  [habilitarProgressBar]="pesquisandoLeitura"
 >
   <ng-template #contentExpansivelTable>
-    
     <div *ngIf="linhaSelecionadaId == 1">
       Opção 1....
     </div>
@@ -14,6 +12,5 @@
     <div *ngIf="linhaSelecionadaId == 2">
       Opçãpo 2....
     </div>
-
   </ng-template>
 </ic-expansivel-table>
